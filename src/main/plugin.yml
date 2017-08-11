@@ -5,8 +5,8 @@ load: POSTWORLD
 author: FENGberd
 
 softdepend:
- - "Money"
  - "EconomyAPI"
+# - "Money"
 
 api:
  - "1.0.0"
