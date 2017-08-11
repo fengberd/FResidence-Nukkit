@@ -1,0 +1,25 @@
+name: FResidence
+main: moe.berd.nukkit.FResidence.Main
+version: 1.1.8
+load: POSTWORLD
+author: FENGberd
+softdepend:
+ - "ZXDAKernel"
+ - "EconomyAPI"
+
+api:
+ - "1.0.0"
+
+permissions:
+ FResidence.*:
+  description: 根权限
+  default: true
+ FResidence.admin:
+  description: 管理权限
+  default: op
+ FResidence.command.*:
+  description: 使用命令权限
+  default: op
+ FResidence.command.residence:
+  description: 领地主指令
+  default: true
