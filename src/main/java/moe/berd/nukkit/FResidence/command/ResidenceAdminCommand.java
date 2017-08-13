@@ -13,7 +13,7 @@ public class ResidenceAdminCommand extends Command
 	
 	public ResidenceAdminCommand(Main main)
 	{
-		super("residenceadmin",Utils.translate("command.residenceadmin.description"),"",new String[]{"resadmin"});
+		super("residenceadmin",Utils.translate("command.residenceadmin.description"),Utils.translate("command.residenceadmin.usage"),new String[]{"resadmin"});
 		this.main=main;
 		this.setPermission("FResidence.admin");
 	}
@@ -30,7 +30,7 @@ public class ResidenceAdminCommand extends Command
 					args=new String[]{"help"};
 				}
 				args[0]=args[0].toLowerCase();
-				this.main.onResidenceAdminCommand(sender,args);
+				return this.main.onResidenceAdminCommand(sender,args);
 			}
 			catch(FResidenceException e)
 			{

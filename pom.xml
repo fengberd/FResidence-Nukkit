@@ -2,8 +2,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <name>FResidence</name>
     <modelVersion>4.0.0</modelVersion>
+
+    <name>FResidence</name>
     <groupId>moe.berd.nukkit</groupId>
     <artifactId>FResidence</artifactId>
     <version>1.1.8</version>
@@ -42,4 +43,124 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <packaging>jar</packaging>
+
+    <build>
+        <finalName>FResidence_${project.version}</finalName>
+
+        <defaultGoal>clean package</defaultGoal>
+        <sourceDirectory>src/main/java</sourceDirectory>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main</directory>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce</id>
+                        <configuration>
+                            <rules>
+                                <DependencyConvergence/>
+                            </rules>
+                        </configuration>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.wvengen</groupId>
+                <artifactId>proguard-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals><goal>proguard</goal></goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <maxMemory>2048m</maxMemory>
+                    <proguardInclude>${basedir}/proguard.conf</proguardInclude>
+                    <assembly>
+                        <inclusions>
+                            <inclusion>
+                                <groupId>cn.nukkit</groupId>
+                                <artifactId>nukkit</artifactId>
+                                <library>true</library>
+                            </inclusion>
+                            <inclusion>
+                                <groupId>me.onebone</groupId>
+                                <artifactId>economyapi</artifactId>
+                                <library>true</library>
+                            </inclusion>
+                        </inclusions>
+                    </assembly>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>cn.nukkit</groupId>
+                            <artifactId>nukkit</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>me.onebone</groupId>
+                            <artifactId>economyapi</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>net.java.dev.jna</groupId>
+                            <artifactId>*</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>org.slf4j</groupId>
+                            <artifactId>*</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.github.oshi</groupId>
+                            <artifactId>*</artifactId>
+                        </exclusion>
+                    </exclusions>
+                    <libs>
+                        <lib>${java.home}/lib/rt.jar</lib>
+                    </libs>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

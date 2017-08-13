@@ -91,23 +91,26 @@ public class Permissions
 	public Permissions(Residence res,ConfigSection data)
 	{
 		this(res);
-		ConfigSection players=data.getSection("players");
-		players.getKeys(false).forEach(k->
+		if(data.isSection("players"))
 		{
-			ConfigSection player=players.getSection(k);
-			Map<String,Boolean> tempPermission=new HashMap<>();
-			playerDefaults.keySet().forEach(key->
+			ConfigSection players=data.getSection("players");
+			players.getKeys(false).forEach(k->
 			{
-				if(player.containsKey(key))
+				ConfigSection player=players.getSection(k);
+				Map<String,Boolean> tempPermission=new HashMap<>();
+				playerDefaults.keySet().forEach(key->
 				{
-					tempPermission.put(key,player.getBoolean(key));
+					if(player.containsKey(key))
+					{
+						tempPermission.put(key,player.getBoolean(key));
+					}
+				});
+				if(tempPermission.size()>0)
+				{
+					playerPermissions.put(Utils.getPlayerName(k),tempPermission);
 				}
 			});
-			if(tempPermission.size()>0)
-			{
-				playerPermissions.put(Utils.getPlayerName(k),tempPermission);
-			}
-		});
+		}
 		ConfigSection default_=data.getSection("default");
 		permissions.keySet().forEach(key->permissions.put(key,default_.getBoolean(key)));
 	}

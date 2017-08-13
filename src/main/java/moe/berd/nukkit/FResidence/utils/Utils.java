@@ -58,17 +58,21 @@ public class Utils
 		return namePattern.matcher(val).find();
 	}
 	
-	public static String makeList(String title,String[][] data,int page,int itemPerPage,Function<String[],String> callback)
+	public static String makeList(String title,Object[] data,int page,int itemPerPage,Function<Object,String> callback)
 	{
-		int total=(int)Math.ceil(data.length/itemPerPage);
-		if(callback==null)
+		int total=(int)Math.ceil(data.length/(double)itemPerPage);
+		if(page>total || page<1)
 		{
-			callback=s->TextFormat.DARK_GREEN+s[1]+TextFormat.WHITE+s[2];
+			page=1;
 		}
-		StringBuilder result=new StringBuilder("--- "+title+" ["+page+"/"+total+"] ---");
+		StringBuilder result=new StringBuilder("--- "+title+" ["+page+"/"+total+"] ---\n");
 		for(int i=(page-1)*itemPerPage;i<Math.min(page*itemPerPage,data.length);i++)
 		{
-			result.append(callback.apply(data[i]));
+			result.append(callback.apply(data[i])).append("\n");
+		}
+		if(result.charAt(result.length()-1)=='\n')
+		{
+			result.deleteCharAt(result.length()-1);
 		}
 		return result.toString();
 	}
@@ -131,7 +135,7 @@ public class Utils
 	
 	public static String translate(String data,String... params)
 	{
-		return Main.getLanguage().translateString(data,params);
+		return Main.getLanguage().translateString(data,params).replace("\\n","\n");
 	}
 	
 	public static String getColoredString(String msg,TextFormat color)

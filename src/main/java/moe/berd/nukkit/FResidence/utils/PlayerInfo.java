@@ -3,16 +3,17 @@ package moe.berd.nukkit.FResidence.utils;
 import java.util.*;
 
 import cn.nukkit.*;
+import cn.nukkit.utils.*;
 import cn.nukkit.level.*;
 import cn.nukkit.plugin.*;
 import cn.nukkit.metadata.*;
-import cn.nukkit.utils.*;
+
 import moe.berd.nukkit.FResidence.provider.*;
 
 public class PlayerInfo implements IPlayer
 {
 	public int checkMoveTick=10;
-	public List<Position> movementLog=new ArrayList<>();
+	public List<Location> movementLog=new ArrayList<>();
 	
 	private Player player;
 	private Position pos1, pos2;
@@ -46,10 +47,25 @@ public class PlayerInfo implements IPlayer
 		return c.expired() ? null : c;
 	}
 	
+	public PlayerInfo addConfirm(String type,String code,String action)
+	{
+		return addConfirm(type,code,action,new String[0],60);
+	}
+	
+	public PlayerInfo addConfirm(String type,String code,String action,String[] args)
+	{
+		return addConfirm(type,code,action,args,60);
+	}
+	
 	public PlayerInfo addConfirm(String type,String code,String action,String[] args,int expires)
 	{
 		confirmQueue.put(type+code,new ConfirmInfo(action,args,expires));
 		return this;
+	}
+	
+	public PlayerInfo sendColorTip(String msg)
+	{
+		return sendColorTip(msg,TextFormat.WHITE,new String[0]);
 	}
 	
 	public PlayerInfo sendColorTip(String msg,TextFormat color)
@@ -76,7 +92,7 @@ public class PlayerInfo implements IPlayer
 	
 	public int validateSelect()
 	{
-		return validateSelect(false);
+		return validateSelect(true);
 	}
 	
 	public int validateSelect(boolean notify)
@@ -108,7 +124,7 @@ public class PlayerInfo implements IPlayer
 		return pos1;
 	}
 	
-	public void setPos1(Position pos1)
+	public PlayerInfo setPos1(Position pos1)
 	{
 		if(pos1!=null)
 		{
@@ -116,6 +132,7 @@ public class PlayerInfo implements IPlayer
 			pos1.y=ConfigProvider.getBoolean("SelectVert") ? 0 : Math.min(Math.max(pos1.y,0),256);
 		}
 		this.pos1=pos1;
+		return this;
 	}
 	
 	public Position getPos2()
@@ -123,7 +140,7 @@ public class PlayerInfo implements IPlayer
 		return pos2;
 	}
 	
-	public void setPos2(Position pos2)
+	public PlayerInfo setPos2(Position pos2)
 	{
 		if(pos2!=null)
 		{
@@ -131,6 +148,7 @@ public class PlayerInfo implements IPlayer
 			pos2.y=ConfigProvider.getBoolean("SelectVert") ? 256 : Math.min(Math.max(pos2.y,0),256);
 		}
 		this.pos2=pos2;
+		return this;
 	}
 	
 	@Override
@@ -233,5 +251,24 @@ public class PlayerInfo implements IPlayer
 	public void setOp(boolean value)
 	{
 		player.setOp(value);
+	}
+	
+	public class ConfirmInfo
+	{
+		public long expires;
+		public String action;
+		public String[] args;
+		
+		public ConfirmInfo(String action,String[] args,int expiresSeconds)
+		{
+			this.args=args;
+			this.action=action;
+			this.expires=System.currentTimeMillis()+expiresSeconds*1000;
+		}
+		
+		public boolean expired()
+		{
+			return expires<System.currentTimeMillis();
+		}
 	}
 }

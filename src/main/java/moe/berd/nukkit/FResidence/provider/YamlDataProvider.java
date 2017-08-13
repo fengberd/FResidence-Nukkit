@@ -78,7 +78,7 @@ public class YamlDataProvider extends BaseDataProvider
 		residences.clear();
 		for(Object o : config.getList("Residences"))
 		{
-			ConfigSection res=(ConfigSection)o;
+			ConfigSection res=new ConfigSection((LinkedHashMap<String, Object>)o);
 			try
 			{
 				if(getResidenceByName(res.getString("name"))!=null)
