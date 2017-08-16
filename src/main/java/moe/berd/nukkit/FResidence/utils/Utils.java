@@ -77,6 +77,20 @@ public class Utils
 		return result.toString();
 	}
 	
+	public static String makeFullList(String title,Object[] data,Function<Object,String> callback)
+	{
+		StringBuilder result=new StringBuilder(title+"\n");
+		for(Object o : data)
+		{
+			result.append(callback.apply(o)).append("\n");
+		}
+		if(result.charAt(result.length()-1)=='\n')
+		{
+			result.deleteCharAt(result.length()-1);
+		}
+		return result.toString();
+	}
+	
 	public static boolean parseBool(Object val)
 	{
 		if(val instanceof Boolean)

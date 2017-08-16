@@ -194,7 +194,7 @@ public class Main extends PluginBase implements Listener
 		{
 			return false;
 		}
-		else if(args.length<(cmd=_RES_COMMAND_HELP.get(args[0])).argsCount)
+		else if(args.length<=(cmd=_RES_COMMAND_HELP.get(args[0])).argsCount)
 		{
 			sender.sendMessage(Utils.getColoredString(cmd.usage,TextFormat.AQUA));
 		}
@@ -437,42 +437,224 @@ public class Main extends PluginBase implements Listener
 				}
 				break;
 			}
-			// TODO: onResidenceCommand
 			case "pset":
 			{
-			
+				if(!Utils.validatePlayerName(args[2]=Utils.getPlayerName(args[2])))
+				{
+					player.sendColorMessage("commands.pset.invalid_name",TextFormat.RED);
+					break;
+				}
+				if(!Permissions.validatePlayerIndex(args[3]=args[3].toLowerCase()))
+				{
+					player.getPlayer().sendMessage(Utils.makeFullList(TextFormat.RED+Utils.translate("commands.pset.invalid_index"),Permissions.getPlayerDefaults().keySet().toArray(),o->o+" - "+Utils.translate("permissions."+o+".description")));
+					break;
+				}
+				Residence res=provider.getResidenceByName(args[1]);
+				if(res==null)
+				{
+					player.sendColorMessage("commands.pset.not_exists",TextFormat.RED);
+					break;
+				}
+				if(!granted && !res.isOwner(player))
+				{
+					player.sendColorMessage("commands.pset.no_permission",TextFormat.RED);
+					break;
+				}
+				if(args[4].toLowerCase().equals("remove"))
+				{
+					res.getPermissions().removePlayerPermission(args[2],args[3]);
+					player.sendColorMessage("commands.pset.success_remove",TextFormat.GREEN,args[2],res.getName(),args[3]);
+				}
+				else
+				{
+					res.getPermissions().setPlayerPermission(args[2],args[3],args[4]);
+					player.sendColorMessage("commands.pset.success_set",TextFormat.GREEN,args[2],res.getName(),args[3],Utils.translate(Utils.parseBool(args[4])?"option.on.1":"option.off.1"));
+				}
+				break;
 			}
 			case "set":
 			{
-			
+				if(!Permissions.validateIndex(args[2]=args[2].toLowerCase()))
+				{
+					player.getPlayer().sendMessage(Utils.makeFullList(TextFormat.RED+Utils.translate("commands.set.invalid_index"),Permissions.getDefaults().keySet().toArray(),o->o+" - "+Utils.translate("permissions."+o+".description")));
+					break;
+				}
+				Residence res=provider.getResidenceByName(args[1]);
+				if(res==null)
+				{
+					player.sendColorMessage("commands.set.not_exists",TextFormat.RED);
+					break;
+				}
+				if(!granted && !res.isOwner(player))
+				{
+					player.sendColorMessage("commands.set.no_permission",TextFormat.RED);
+					break;
+				}
+				res.getPermissions().setPermission(args[2],args[3]);
+				player.sendColorMessage("commands.set.success_set",TextFormat.GREEN,res.getName(),args[2],Utils.translate(Utils.parseBool(args[3])?"option.on.1":"option.off.1"));
+				break;
 			}
 			case "default":
 			{
-			
+				Residence res=provider.getResidenceByName(args[1]);
+				if(res==null)
+				{
+					player.sendColorMessage("commands.default.not_exists",TextFormat.RED);
+					break;
+				}
+				if(!granted && !res.isOwner(player))
+				{
+					player.sendColorMessage("commands.default.no_permission",TextFormat.RED);
+					break;
+				}
+				res.getPermissions().resetPermissions();
+				player.sendColorMessage("commands.default.success",TextFormat.GREEN);
+				break;
 			}
 			case "give":
 			{
-			
+				if(!Utils.validatePlayerName(args[2]=Utils.getPlayerName(args[2])))
+				{
+					player.sendColorMessage("commands.give.invalid_name",TextFormat.RED);
+					break;
+				}
+				Residence res=provider.getResidenceByName(args[1]);
+				if(res==null)
+				{
+					player.sendColorMessage("commands.give.not_exists",TextFormat.RED);
+					break;
+				}
+				if(!granted && !res.isOwner(player))
+				{
+					player.sendColorMessage("commands.give.no_permission",TextFormat.RED);
+					break;
+				}
+				ResidenceOwnerChangeEvent ev=new ResidenceOwnerChangeEvent(res,args[2]);
+				if(Utils.callEvent(ev))
+				{
+					res.setOwner(ev.getOwner());
+					player.sendColorMessage("commands.give.success",TextFormat.GREEN,res.getName(),ev.getOwner());
+				}
+				break;
 			}
 			case "message":
 			{
-			
+				if(!Messages.validateIndex(args[2]=args[2].toLowerCase()))
+				{
+					player.getPlayer().sendMessage(Utils.makeFullList(TextFormat.RED+Utils.translate("commands.message.invalid_index"),Messages.getDefaults().keySet().toArray(),o->o+" - "+Utils.translate("messages."+o+".description")));
+					break;
+				}
+				Residence res=provider.getResidenceByName(args[1]);
+				if(res==null)
+				{
+					player.sendColorMessage("commands.message.not_exists",TextFormat.RED);
+					break;
+				}
+				if(!granted && !res.isOwner(player))
+				{
+					player.sendColorMessage("commands.message.no_permission",TextFormat.RED);
+					break;
+				}
+				if(args[3].equals("remove"))
+				{
+					res.getMessages().setMessage(args[2],"");
+					player.sendColorMessage("commands.message.success_remove",TextFormat.GREEN,res.getName(),args[2]);
+				}
+				else
+				{
+					res.getMessages().setMessage(args[2],args[3]);
+					player.sendColorMessage("commands.message.success_set",TextFormat.GREEN,res.getName(),args[2]);
+				}
+				break;
 			}
 			case "mirror":
 			{
-			
+				Residence src=provider.getResidenceByName(args[1]),dest=provider.getResidenceByName(args[2]);
+				if(src==null)
+				{
+					player.sendColorMessage("commands.mirror.src_not_exists",TextFormat.RED);
+					break;
+				}
+				if(!granted && !src.isOwner(player))
+				{
+					player.sendColorMessage("commands.mirror.src_no_permission",TextFormat.RED);
+					break;
+				}
+				if(dest==null)
+				{
+					player.sendColorMessage("commands.mirror.dest_not_exists",TextFormat.RED);
+					break;
+				}
+				if(!granted && !dest.isOwner(player))
+				{
+					player.sendColorMessage("commands.mirror.dest_no_permission",TextFormat.RED);
+					break;
+				}
+				dest.setPermissions(new Permissions(dest,src.getPermissions().getRawData()));
+				player.sendColorMessage("commands.mirror.success",TextFormat.GREEN,src.getName(),dest.getName());
+				break;
 			}
+			// TODO: onResidenceCommand
 			case "rename":
 			{
-			
+				Residence res=provider.getResidenceByName(args[1]);
+				if(res==null)
+				{
+					player.sendColorMessage("commands.rename.not_exists",TextFormat.RED);
+					break;
+				}
+				if(!granted && !res.isOwner(player))
+				{
+					player.sendColorMessage("commands.rename.no_permission",TextFormat.RED);
+					break;
+				}
+				if(args[2].length()<=0 || args[2].length()>=60)
+				{
+					player.sendColorMessage("commands.rename.invalid_name",TextFormat.RED);
+					break;
+				}
+				if(provider.getResidenceByName(args[2])!=null)
+				{
+					player.sendColorMessage("commands.rename.name_exists",TextFormat.RED);
+					break;
+				}
+				player.sendColorMessage("commands.rename.success",TextFormat.GREEN,res.getName(),args[2]);
+				res.setName(args[2]);
+				break;
 			}
 			case "tp":
 			{
-			
+				Residence res=provider.getResidenceByName(args[1]);
+				if(res==null)
+				{
+					player.sendColorMessage("commands.tp.not_exists",TextFormat.RED);
+					break;
+				}
+				if(!granted && !res.isOwner(player) && !res.hasPermission(player,Permissions.PERMISSION_TELEPORT))
+				{
+					player.sendColorMessage("commands.tp.no_permission",TextFormat.RED);
+					break;
+				}
+				player.getPlayer().teleport(res.getTeleportPos());
+				player.sendColorMessage("commands.tp.success",TextFormat.GREEN,res.getName());
+				break;
 			}
 			case "tpset":
 			{
-			
+				Residence res=provider.getResidenceByPosition(player.getPlayer());
+				if(res==null)
+				{
+					player.sendColorMessage("commands.tpset.empty",TextFormat.RED);
+					break;
+				}
+				if(!granted && !res.isOwner(player))
+				{
+					player.sendColorMessage("commands.tpset.no_permission",TextFormat.RED);
+					break;
+				}
+				res.setTeleportPos(player.getPlayer());
+				player.sendColorMessage("commands.tpset.success",TextFormat.GREEN,res.getName());
+				break;
 			}
 			}
 		}
@@ -485,7 +667,109 @@ public class Main extends PluginBase implements Listener
 	
 	public boolean onResidenceAdminCommand(CommandSender sender,String[] args) throws FResidenceException
 	{
-		// TODO: onResidenceAdminCommand
+		PlayerInfo player;
+		CommandInfo cmd;
+		if(!_RESADMIN_COMMAND_HELP.containsKey(args[0]) && !_RES_COMMAND_HELP.containsKey(args[0]))
+		{
+			return false;
+		}
+		else if((_RESADMIN_COMMAND_HELP.containsKey(args[0]) && args.length<=(cmd=_RESADMIN_COMMAND_HELP.get(args[0])).argsCount) ||
+			args.length<=(cmd=_RES_COMMAND_HELP.get(args[0])).argsCount)
+		{
+			sender.sendMessage(Utils.getColoredString(cmd.usage,TextFormat.AQUA));
+		}
+		else if(args.length<=(cmd=_RES_COMMAND_HELP.get(args[0])).argsCount)
+		{
+			sender.sendMessage(Utils.getColoredString(cmd.usage,TextFormat.AQUA));
+		}
+		else
+		{
+			switch(args[0])
+			{
+			// TODO: onResidenceAdminCommand
+			case "list":
+			{
+				
+				break;
+			}
+			case "listall":
+			{
+				
+				break;
+			}
+			case "removeall":
+			{
+				
+				break;
+			}
+			case "removeworld":
+			{
+				
+				break;
+			}
+			case "setowner":
+			{
+				if(!Utils.validatePlayerName(args[2]=Utils.getPlayerName(args[2])))
+				{
+					sender.sendMessage(Utils.getColoredString("commands.admin.setowner.invalid_name",TextFormat.RED));
+					break;
+				}
+				Residence res=provider.getResidenceByName(args[1]);
+				if(res==null)
+				{
+					sender.sendMessage(Utils.getColoredString("commands.admin.setowner.not_exists",TextFormat.RED));
+					break;
+				}
+				ResidenceOwnerChangeEvent ev=new ResidenceOwnerChangeEvent(res,args[2]);
+				if(Utils.callEvent(ev))
+				{
+					res.setOwner(ev.getOwner());
+					sender.sendMessage(Utils.getColoredString("commands.admin.setowner.success",TextFormat.GREEN,res.getName(),ev.getOwner()));
+				}
+				break;
+			}
+			case "server":
+			{
+				Residence res=provider.getResidenceByName(args[1]);
+				if(res==null)
+				{
+					sender.sendMessage(Utils.getColoredString("commands.admin.server.not_exists",TextFormat.RED));
+					break;
+				}
+				res.setOwner("");
+				sender.sendMessage(Utils.getColoredString("commands.admin.server.success",TextFormat.GREEN,res.getName()));
+				break;
+			}
+			case "reload":
+			{
+				reload();
+				sender.sendMessage(Utils.getColoredString("commands.admin.reload.success",TextFormat.GREEN));
+				break;
+			}
+			case "help":
+			{
+				int page=0;
+				if(args.length>1)
+				{
+					try
+					{
+						page=Integer.parseInt(args[1]);
+					}
+					catch(Exception ignored)
+					{
+					
+					}
+				}
+				sender.sendMessage(Utils.makeList("FResidence Admin Help",_RESADMIN_COMMAND_HELP.values().toArray(),page,sender instanceof Player ? 5 : 50,v->
+				{
+					CommandInfo val=((CommandInfo)v);
+					return TextFormat.DARK_GREEN+val.command+": "+TextFormat.WHITE+Utils.translate(val.description);
+				}));
+			}
+			default:
+				return onResidenceCommand(sender,args);
+			}
+		}
 		return true;
 	}
 	
