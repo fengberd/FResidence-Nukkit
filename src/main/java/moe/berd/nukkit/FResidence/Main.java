@@ -468,7 +468,7 @@ public class Main extends PluginBase implements Listener
 				else
 				{
 					res.getPermissions().setPlayerPermission(args[2],args[3],args[4]);
-					player.sendColorMessage("commands.pset.success_set",TextFormat.GREEN,args[2],res.getName(),args[3],Utils.translate(Utils.parseBool(args[4])?"option.on.1":"option.off.1"));
+					player.sendColorMessage("commands.pset.success_set",TextFormat.GREEN,args[2],res.getName(),args[3],Utils.translate(Utils.parseBool(args[4]) ? "option.on.1" : "option.off.1"));
 				}
 				break;
 			}
@@ -491,7 +491,7 @@ public class Main extends PluginBase implements Listener
 					break;
 				}
 				res.getPermissions().setPermission(args[2],args[3]);
-				player.sendColorMessage("commands.set.success_set",TextFormat.GREEN,res.getName(),args[2],Utils.translate(Utils.parseBool(args[3])?"option.on.1":"option.off.1"));
+				player.sendColorMessage("commands.set.success_set",TextFormat.GREEN,res.getName(),args[2],Utils.translate(Utils.parseBool(args[3]) ? "option.on.1" : "option.off.1"));
 				break;
 			}
 			case "default":
@@ -569,7 +569,7 @@ public class Main extends PluginBase implements Listener
 			}
 			case "mirror":
 			{
-				Residence src=provider.getResidenceByName(args[1]),dest=provider.getResidenceByName(args[2]);
+				Residence src=provider.getResidenceByName(args[1]), dest=provider.getResidenceByName(args[2]);
 				if(src==null)
 				{
 					player.sendColorMessage("commands.mirror.src_not_exists",TextFormat.RED);
@@ -674,7 +674,7 @@ public class Main extends PluginBase implements Listener
 			return false;
 		}
 		else if((_RESADMIN_COMMAND_HELP.containsKey(args[0]) && args.length<=(cmd=_RESADMIN_COMMAND_HELP.get(args[0])).argsCount) ||
-			args.length<=(cmd=_RES_COMMAND_HELP.get(args[0])).argsCount)
+				args.length<=(cmd=_RES_COMMAND_HELP.get(args[0])).argsCount)
 		{
 			sender.sendMessage(Utils.getColoredString(cmd.usage,TextFormat.AQUA));
 		}

@@ -31,9 +31,11 @@ public interface IDataProvider
 	IDataProvider save();
 	
 	IDataProvider close(); // save=true
+	
 	IDataProvider close(boolean save);
 	
 	IDataProvider reload(); // save=false
+	
 	IDataProvider reload(boolean save);
 	
 	

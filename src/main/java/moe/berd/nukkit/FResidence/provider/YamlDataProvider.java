@@ -53,6 +53,7 @@ public class YamlDataProvider extends BaseDataProvider
 	}
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public IDataProvider reload(boolean save)
 	{
 		if(save)
@@ -78,7 +79,7 @@ public class YamlDataProvider extends BaseDataProvider
 		residences.clear();
 		for(Object o : config.getList("Residences"))
 		{
-			ConfigSection res=new ConfigSection((LinkedHashMap<String, Object>)o);
+			ConfigSection res=new ConfigSection((LinkedHashMap<String,Object>)o);
 			try
 			{
 				if(getResidenceByName(res.getString("name"))!=null)

@@ -8,7 +8,7 @@ public class ResidenceAddEvent extends CancellableFResidenceEvent
 	private String name;
 	private double money;
 	private Player player;
-	private Position select1,select2;
+	private Position select1, select2;
 	
 	public ResidenceAddEvent(double money,Position select1,Position select2,String name,Player player)
 	{
